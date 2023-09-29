@@ -2,7 +2,7 @@
  * @author: Cesar Lopez
  * @copyright 2023 - All rights reserved
  */
-namespace SqsPublisher;
+namespace Sqs.Models;
 
 public class CustomerCreated
 {
