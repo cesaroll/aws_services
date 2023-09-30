@@ -5,11 +5,9 @@ services:
     container_name: customers_db
     image: postgres
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: app
       POSTGRES_PASSWORD: Password123
-      PGDATA: /data/postgres
-    # volumes:
-    #   - postgres:/data/postgres
+      POSTGRES_DB: customers
     ports:
       - "5432:5432"
     networks:
@@ -27,8 +25,7 @@ services:
     depends_on:
       PostgreSql:
         condition: service_healthy
-    command: liquibase update --changeLogFile=changelog.xml --url=jdbc:postgresql://PostgreSql:5432/postgres --username=postgres --password=Password123 --log-level info
-    #command: cat migrations/changelog.xml
+    command: liquibase update --changeLogFile=changelog.xml --url=jdbc:postgresql://PostgreSql:5432/customers --username=app --password=Password123 --log-level info
     volumes:
       - ./database/config/changelog.xml:/liquibase/changelog.xml
       - ./database/migrations:/liquibase/migrations

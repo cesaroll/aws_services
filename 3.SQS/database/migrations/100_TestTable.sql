@@ -1,4 +1,7 @@
-CREATE TABLE TESTE_LIQUIBASE (
-    Id int,
-    Teste varchar(255)
+CREATE TABLE "Customers" (
+    "Id" UUID PRIMARY KEY,
+    "FullName" VARCHAR(100) NOT NULL,
+    "Email" VARCHAR(100) NOT NULL,
+    "GitHubUsername" VARCHAR(100) NOT NULL,
+    "DateOfBirth" TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
