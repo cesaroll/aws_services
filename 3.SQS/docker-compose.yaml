@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  PostgreSql:
+    container_name: customers_db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Password123
+      PGDATA: /data/postgres
+    # volumes:
+    #   - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  Liquibase:
+    container_name: migrations
+    image: liquibase/liquibase
+    depends_on:
+      PostgreSql:
+        condition: service_healthy
+    command: liquibase update --changeLogFile=changelog.xml --url=jdbc:postgresql://PostgreSql:5432/postgres --username=postgres --password=Password123 --log-level info
+    #command: cat migrations/changelog.xml
+    volumes:
+      - ./database/config/changelog.xml:/liquibase/changelog.xml
+      - ./database/migrations:/liquibase/migrations
+    networks:
+      - postgres
+
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
