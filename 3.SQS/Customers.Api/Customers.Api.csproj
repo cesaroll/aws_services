@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10"/>
+        <PackageReference Include="Riok.Mapperly" Version="3.2.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
@@ -20,8 +21,11 @@
 
     <ItemGroup>
       <Folder Include="Domain\" />
-      <Folder Include="Mapping\" />
       <Folder Include="Repositories\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Customer.Db\Customer.Db.csproj" />
     </ItemGroup>
 
 </Project>

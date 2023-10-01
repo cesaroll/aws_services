@@ -1,6 +1,17 @@
+using Customer.Db;
+using Customers.Api.Mapping;
+using Customers.Api.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<CustomersContext>(opt =>
+	opt.UseNpgsql(builder.Configuration.GetConnectionString("Customers")));
+
+builder.Services.AddSingleton<CustomerMapper>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
