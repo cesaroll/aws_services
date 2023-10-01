@@ -1,8 +1,7 @@
-namespace Customers.Api.Contracts;
+namespace Customers.Api.Contracts.Requests;
 
-public class CustomerResponse
+public class UpdateCustomerRequest
 {
-	public Guid Id { get; set; }
 	public string FullName { get; set; } = null!;
 
 	public string Email { get; set; } = null!;

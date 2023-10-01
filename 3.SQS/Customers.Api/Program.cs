@@ -1,5 +1,5 @@
 using Customer.Db;
-using Customers.Api.Mapping;
+using Customers.Api.Mapping.Mappers;
 using Customers.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CustomersContext>(opt =>
 	opt.UseNpgsql(builder.Configuration.GetConnectionString("Customers")));
 
-builder.Services.AddSingleton<CustomerMapper>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddControllers();

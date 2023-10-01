@@ -1,4 +1,5 @@
 using Customer.Db;
+using CustomerEntity =  Customer.Db.Entities.Customer;
 using Microsoft.EntityFrameworkCore;
 
 namespace Customers.Api.Services;
@@ -14,16 +15,29 @@ public class CustomerService : ICustomerService
 		_customersContext = customersContext;
 	}
 
-	public async Task<int> CreateAsync(Customer.Db.Entities.Customer customer, CancellationToken cancellationToken)
+	public async Task<int> CreateAsync(CustomerEntity customer, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Creating customer");
 		await _customersContext.Customers.AddAsync(customer, cancellationToken);
 		return await _customersContext.SaveChangesAsync(cancellationToken);
 	}
 
-	public async Task<Customer.Db.Entities.Customer?> GetAsync(Guid id, CancellationToken cancellationToken)
+	public async Task<CustomerEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Getting customer");
 		return await _customersContext.Customers.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+	}
+
+	public async Task<IEnumerable<CustomerEntity>> GetAllAsync(CancellationToken cancellationToken)
+	{
+		_logger.LogInformation("Getting all customers");
+		return await _customersContext.Customers.ToListAsync(cancellationToken);
+	}
+
+	public Task<int> UpdateAsync(CustomerEntity customer, CancellationToken cancellationToken)
+	{
+		_logger.LogInformation("Updating customer");
+		_customersContext.Customers.Update(customer);
+		return _customersContext.SaveChangesAsync(cancellationToken);
 	}
 }

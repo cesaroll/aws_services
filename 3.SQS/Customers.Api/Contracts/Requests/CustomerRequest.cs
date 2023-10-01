@@ -1,4 +1,4 @@
-namespace Customers.Api.Contracts;
+namespace Customers.Api.Contracts.Requests;
 
 public class CustomerRequest
 {
