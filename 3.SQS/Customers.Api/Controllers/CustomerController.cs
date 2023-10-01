@@ -24,10 +24,26 @@ public class CustomerController : ControllerBase
 	}
 
 	[HttpPost(Name = "CreateCustomer")]
-	public async Task<IActionResult> Create([FromBody] CustomerRequest request)
+	public async Task<IActionResult> Create([FromBody] CustomerRequest request, CancellationToken cancellationToken)
 	{
 		var customer = _customerMapper.CustomerRequestToCustomer(request);
-		await _customerService.CreateAsync(customer);
-		return Ok();
+		await _customerService.CreateAsync(customer, cancellationToken);
+		
+		var customerResponse = _customerMapper.CustomerToCustomerResponse(customer);
+		
+		return CreatedAtAction("Get", new { id = customerResponse.Id }, customerResponse);
+	}
+	
+	[HttpGet("{id}", Name = "GetCustomer")]
+	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
+	{
+		var customer = await _customerService.GetAsync(id, cancellationToken);
+		if (customer == null)
+		{
+			return NotFound();
+		}
+
+		var customerResponse = _customerMapper.CustomerToCustomerResponse(customer);
+		return Ok(customerResponse);
 	}
 }

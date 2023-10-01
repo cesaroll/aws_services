@@ -1,4 +1,5 @@
 using Customer.Db;
+using Microsoft.EntityFrameworkCore;
 
 namespace Customers.Api.Services;
 
@@ -13,10 +14,16 @@ public class CustomerService : ICustomerService
 		_customersContext = customersContext;
 	}
 
-	public async Task<int> CreateAsync(Customer.Db.Entities.Customer customer)
+	public async Task<int> CreateAsync(Customer.Db.Entities.Customer customer, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Creating customer");
-		_customersContext.Customers.Add(customer);
-		return await _customersContext.SaveChangesAsync();
+		await _customersContext.Customers.AddAsync(customer, cancellationToken);
+		return await _customersContext.SaveChangesAsync(cancellationToken);
+	}
+
+	public async Task<Customer.Db.Entities.Customer?> GetAsync(Guid id, CancellationToken cancellationToken)
+	{
+		_logger.LogInformation("Getting customer");
+		return await _customersContext.Customers.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 	}
 }
