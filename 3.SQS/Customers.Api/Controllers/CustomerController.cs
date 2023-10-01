@@ -70,4 +70,20 @@ public class CustomerController : ControllerBase
 		
 		return Ok(customerResponse);
 	}
+
+	[HttpDelete("{id}", Name = "DeleteCustomer")]
+	public async Task<IActionResult> Delete(
+		[FromRoute] Guid id,
+		CancellationToken cancellationToken)
+	{
+		var customer = await _customerService.GetAsync(id, cancellationToken);
+		if (customer == null)
+		{
+			return NotFound();
+		}
+
+		await _customerService.DeleteAsync(customer, cancellationToken);
+
+		return Ok();
+	}
 }

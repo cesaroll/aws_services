@@ -40,4 +40,11 @@ public class CustomerService : ICustomerService
 		_customersContext.Customers.Update(customer);
 		return _customersContext.SaveChangesAsync(cancellationToken);
 	}
+
+	public Task<int> DeleteAsync(CustomerEntity customer, CancellationToken cancellationToken)
+	{
+		_logger.LogInformation("Deleting customer");
+		_customersContext.Customers.Remove(customer);
+		return _customersContext.SaveChangesAsync(cancellationToken);
+	}
 }

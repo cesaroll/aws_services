@@ -7,4 +7,6 @@ public interface ICustomerService
 	public Task<CustomerEntity?> GetAsync(Guid id, CancellationToken cancellationToken);
 	public Task<IEnumerable<CustomerEntity>> GetAllAsync(CancellationToken cancellationToken);
 	public Task<int> UpdateAsync(CustomerEntity customer, CancellationToken cancellationToken);
+	
+	public Task<int> DeleteAsync(CustomerEntity customer, CancellationToken cancellationToken);
 }
