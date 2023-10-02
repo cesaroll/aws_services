@@ -1,4 +1,5 @@
 using Customers.Api.Contracts.Requests;
+using Customers.Api.Filters;
 using Customers.Api.Mapping.Extensions;
 using Customers.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace Customers.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+// [ServiceFilter(typeof(ValidationFilter))]
 public class CustomerController : ControllerBase
 {
 	private readonly ILogger<CustomerController> _logger;
