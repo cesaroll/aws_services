@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using Customer.Db;
 using CustomerEntity =  Customer.Db.Entities.Customer;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,7 @@ public class CustomerService : ICustomerService
 	public Task<int> DeleteAsync(CustomerEntity customer, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Deleting customer");
+		throw new InvalidDataContractException("Test exception");
 		_customersContext.Customers.Remove(customer);
 		return _customersContext.SaveChangesAsync(cancellationToken);
 	}
