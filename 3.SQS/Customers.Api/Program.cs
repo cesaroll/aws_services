@@ -1,9 +1,5 @@
-using Customer.Db;
 using Customers.Api.Config.DI;
-using Customers.Api.Filters;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Mvc;
+using Customers.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,11 +11,15 @@ builder.Services.AddMyServices();
 
 builder.Services.AddMyControllers();
 
+builder.Services.AddScoped<ExceptionMiddleware>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.AddMyMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
