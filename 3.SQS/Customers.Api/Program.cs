@@ -12,7 +12,7 @@ builder.Services.AddMyServices();
 
 builder.Services.AddMyControllers();
 
-builder.Services.AddMyLogs(builder.Host, builder.Configuration);
+builder.Services.AddMyLogs(builder.Configuration);
 
 builder.Services.AddScoped<ExceptionMiddleware>();
 
@@ -30,8 +30,6 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
-
-// app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

@@ -7,7 +7,6 @@ public static class MyLogs
 {
 	public static IServiceCollection AddMyLogs(
 		this IServiceCollection services,
-		ConfigureHostBuilder host,
 		IConfiguration configuration)
 	{
 		services.AddLogging(loggingBuilder =>
@@ -19,8 +18,6 @@ public static class MyLogs
 					.CreateLogger()
 				);
 		});
-
-		// host.UseSerilog();
 		
 		return services;
 	}
