@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Customers.Api.Config.DI;
 
-public static class MyControllers
+public static class Controllers
 {
-	public static IServiceCollection AddMyControllers(this IServiceCollection services)
+	public static IServiceCollection AddControllersWithValidation(this IServiceCollection services)
 	{
 		services.AddFluentValidationAutoValidation();
 		services.AddValidatorsFromAssemblyContaining<Program>();

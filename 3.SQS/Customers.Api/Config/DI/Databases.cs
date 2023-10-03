@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Customers.Api.Config.DI;
 
-public static class MyDatabases
+public static class Databases
 {
-	public static IServiceCollection AddMyDatabase(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddPostgreSql(this IServiceCollection services, IConfiguration configuration)
 	{
 		var connectionString = Guard.Against
 			.NullOrWhiteSpace(

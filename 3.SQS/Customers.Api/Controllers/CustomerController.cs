@@ -2,6 +2,7 @@ using Customers.Api.Contracts.Requests;
 using Customers.Api.Mapping.Extensions;
 using Customers.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using ILogger = Serilog.ILogger;
 
 namespace Customers.Api.Controllers;
 
@@ -10,11 +11,11 @@ namespace Customers.Api.Controllers;
 // [ServiceFilter(typeof(ValidationFilter))]
 public class CustomerController : ControllerBase
 {
-	private readonly ILogger<CustomerController> _logger;
+	private readonly ILogger _logger;
 	private readonly ICustomerService _customerService;
 
 	public CustomerController(
-		ILogger<CustomerController> logger, 
+		ILogger logger, 
 		ICustomerService customerService)
 	{
 		_logger = logger;

@@ -2,9 +2,9 @@ using Customers.Api.Middleware;
 
 namespace Customers.Api.Config.DI;
 
-public static class MyMiddleware
+public static class Middleware
 {
-	public static WebApplication AddMyMiddleware(this WebApplication app)
+	public static WebApplication AddMiddleware(this WebApplication app)
 	{
 		app.UseMiddleware<ExceptionMiddleware>();
 		return app;

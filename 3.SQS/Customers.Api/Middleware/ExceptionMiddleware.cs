@@ -1,13 +1,14 @@
 using System.Net;
 using Customers.Api.Contracts.Responses;
+using ILogger = Serilog.ILogger;
 
 namespace Customers.Api.Middleware;
 
 public class ExceptionMiddleware : IMiddleware
 {
-	private readonly ILogger<ExceptionMiddleware> _logger;
+	private readonly ILogger _logger;
 
-	public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger)
+	public ExceptionMiddleware(ILogger logger)
 	{
 		_logger = logger;
 	}
@@ -20,7 +21,7 @@ public class ExceptionMiddleware : IMiddleware
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, ex.Message);
+			_logger.Error(ex, ex.Message);
 			
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;

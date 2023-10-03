@@ -1,20 +1,16 @@
 using Customers.Api.Config.DI;
-using Customers.Api.Middleware;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddMyDatabase(builder.Configuration);
+builder.Services.AddPostgreSql(builder.Configuration);
 
-builder.Services.AddMyServices();
+builder.Services.AddAllServices();
 
-builder.Services.AddMyControllers();
+builder.Services.AddControllersWithValidation();
 
-builder.Services.AddMyLogs(builder.Configuration);
-
-builder.Services.AddScoped<ExceptionMiddleware>();
+builder.Host.AddSerilog();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -22,7 +18,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.AddMyMiddleware();
+app.AddMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
