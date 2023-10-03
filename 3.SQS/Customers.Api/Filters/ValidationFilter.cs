@@ -11,24 +11,25 @@ public class ValidationFilter : IAsyncActionFilter
 		if (!context.ModelState.IsValid)
 		{
 			var errorsInModelState = context.ModelState
-				.Where(x => x.Value.Errors.Count > 0)
+				.Where(x => x.Value?.Errors.Count > 0)
 				.ToDictionary(kvp => 
-					kvp.Key, kvp => kvp.Value.Errors.Select(x => x.ErrorMessage))
+					kvp.Key, kvp => kvp.Value?.Errors.Select(x => x.ErrorMessage))
 				.ToArray();
 			
 			var errorResponse = new ErrorResponse();
 
 			foreach (var error in errorsInModelState)
 			{
-				foreach (var subError in error.Value)
-				{
-					errorResponse.Errors.Add(new ErrorModel
-						{
-							FieldName = error.Key,
-							Message = string.IsNullOrWhiteSpace(subError)? "Invalid field value" : subError
-						}
-					);
-				}
+				if (error.Value != null)
+					foreach (var subError in error.Value)
+					{
+						errorResponse.Errors.Add(new ErrorModel
+							{
+								FieldName = error.Key,
+								Message = string.IsNullOrWhiteSpace(subError) ? "Invalid field value" : subError
+							}
+						);
+					}
 			}
 
 			context.Result = new BadRequestObjectResult(errorResponse);

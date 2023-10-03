@@ -2,6 +2,7 @@ using System.Runtime.Serialization;
 using Customer.Db;
 using CustomerEntity =  Customer.Db.Entities.Customer;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Customers.Api.Services;
 
@@ -26,7 +27,10 @@ public class CustomerService : ICustomerService
 	public async Task<CustomerEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Getting customer");
-		return await _customersContext.Customers.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+		var customer = await _customersContext.Customers.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+		_logger.LogInformation("Customer: {@customer}", customer);
+
+		return customer;
 	}
 
 	public async Task<IEnumerable<CustomerEntity>> GetAllAsync(CancellationToken cancellationToken)

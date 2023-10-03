@@ -1,5 +1,6 @@
 using Customers.Api.Config.DI;
 using Customers.Api.Middleware;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddMyDatabase(builder.Configuration);
 builder.Services.AddMyServices();
 
 builder.Services.AddMyControllers();
+
+builder.Services.AddMyLogs(builder.Host, builder.Configuration);
 
 builder.Services.AddScoped<ExceptionMiddleware>();
 
@@ -27,6 +30,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+// app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

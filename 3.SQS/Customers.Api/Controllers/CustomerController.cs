@@ -1,5 +1,4 @@
 using Customers.Api.Contracts.Requests;
-using Customers.Api.Filters;
 using Customers.Api.Mapping.Extensions;
 using Customers.Api.Services;
 using Microsoft.AspNetCore.Mvc;
