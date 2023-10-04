@@ -8,7 +8,6 @@ namespace Customers.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [ServiceFilter(typeof(ValidationFilter))]
 public class CustomerController : ControllerBase
 {
 	private readonly ILogger _logger;
@@ -26,11 +25,17 @@ public class CustomerController : ControllerBase
 	public async Task<IActionResult> Create([FromBody] CustomerRequest request, CancellationToken cancellationToken)
 	{
 		var customer = request.ToCustomer();
-		await _customerService.CreateAsync(customer, cancellationToken);
+		var result = await _customerService.CreateAsync(customer, cancellationToken);
 
-		var customerResponse = customer.ToCustomerResponse();
-		
-		return CreatedAtAction("Get", new { id = customerResponse.Id }, customerResponse);
+		return result.Match<IActionResult>(cust =>
+		{
+			var customerResponse = cust.ToCustomerResponse();
+			return CreatedAtAction("Get", new { id = customerResponse.Id }, customerResponse);
+		}, exception =>
+		{
+			var errorResponse = exception.ToErrorResponse("Error creating customer");
+			return StatusCode(500, errorResponse);
+		});
 	}
 	
 	[HttpGet("{id}", Name = "GetCustomer")]

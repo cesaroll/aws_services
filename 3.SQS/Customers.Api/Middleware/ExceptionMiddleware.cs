@@ -1,5 +1,5 @@
 using System.Net;
-using Customers.Api.Contracts.Responses;
+using Customers.Api.Mapping.Extensions;
 using ILogger = Serilog.ILogger;
 
 namespace Customers.Api.Middleware;
@@ -21,17 +21,16 @@ public class ExceptionMiddleware : IMiddleware
 		}
 		catch (Exception ex)
 		{
-			_logger.Error(ex, ex.Message);
+			var errorGuid = Guid.NewGuid();
+			
+			_logger
+				.ForContext("ErrorId", errorGuid)
+				.Error(ex, ex.Message);
+
+			var errorResponse = ex.ToErrorResponse($"Check logs for more details (ErrorId: {errorGuid})");
 			
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-			
-			var errorResponse = new ErrorResponse();
-			errorResponse.Errors.Add(new ErrorModel
-			{
-				FieldName = "Error",
-				Message = ex.Message
-			});
 
 			await context.Response.WriteAsJsonAsync(errorResponse);
 		}

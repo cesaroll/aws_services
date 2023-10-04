@@ -1,4 +1,5 @@
 using Customer.Db;
+using LanguageExt.Common;
 using CustomerEntity =  Customer.Db.Entities.Customer;
 using Microsoft.EntityFrameworkCore;
 using ILogger = Serilog.ILogger;
@@ -16,11 +17,26 @@ public class CustomerService : ICustomerService
 		_customersContext = customersContext;
 	}
 
-	public async Task<int> CreateAsync(CustomerEntity customer, CancellationToken cancellationToken)
+	public async Task<Result<CustomerEntity>> CreateAsync(CustomerEntity customer, CancellationToken cancellationToken)
 	{
-		_logger.Information("Creating customer");
-		await _customersContext.Customers.AddAsync(customer, cancellationToken);
-		return await _customersContext.SaveChangesAsync(cancellationToken);
+		try
+		{
+			await _customersContext.Customers.AddAsync(customer, cancellationToken);
+			await _customersContext.SaveChangesAsync(cancellationToken);
+			
+			_logger
+				.ForContext("Customer", customer, destructureObjects: true)
+				.Information("Customer Created");
+			
+			return customer;
+		}
+		catch (Exception ex)
+		{
+			_logger
+				.ForContext("Customer", customer, destructureObjects: true)
+				.Error(ex, "Error creating customer");
+			return new Result<CustomerEntity>(ex);
+		}
 	}
 
 	public async Task<CustomerEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
