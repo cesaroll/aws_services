@@ -21,11 +21,6 @@ public static class CustomerMapperExtensions
 	{
 		return CustomerMapper.Instance.CustomersToCustomerResponses(customers);
 	}
-	
-	public static CustomerEntity ToCustomer(this UpdateCustomerRequest updateCustomerRequest, Guid id)
-	{
-		return CustomerMapper.Instance.UpdateCustomerRequestToCustomer(id, updateCustomerRequest);
-	}
 
 	public static CustomerEntity UpdateWith(this CustomerEntity customer, UpdateCustomerRequest updateCustomerRequest)
 	{

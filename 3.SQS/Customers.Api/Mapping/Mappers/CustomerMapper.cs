@@ -20,15 +20,13 @@ public partial class CustomerMapper
 	private partial CustomerEntity MapCustomerRequestToCustomer(CustomerRequest customerRequest);
 	public partial CustomerResponse CustomerToCustomerResponse(CustomerEntity customer);
 	
-	public partial AllCustomersResponse CustomersToCustomerResponses(IEnumerable<CustomerEntity> customers);
-	
-	public CustomerEntity UpdateCustomerRequestToCustomer(Guid id, UpdateCustomerRequest updateCustomerRequest)
+	public AllCustomersResponse CustomersToCustomerResponses(IEnumerable<CustomerEntity> customers)
 	{
-		var customer = MapUpdateCustomerRequestToCustomer(updateCustomerRequest);
-		customer.Id = id;
-		return customer;
+		return new AllCustomersResponse
+		{
+			Customers = MapCustomersToCustomerResponses(customers)
+		};
 	}
-	
-	private partial CustomerEntity MapUpdateCustomerRequestToCustomer(UpdateCustomerRequest updateCustomerRequest);
+	private partial IEnumerable<CustomerResponse> MapCustomersToCustomerResponses(IEnumerable<CustomerEntity> customers);
 	
 }
