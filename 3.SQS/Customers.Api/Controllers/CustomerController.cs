@@ -3,6 +3,8 @@ using Customers.Api.Mapping.Extensions;
 using Customers.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
+using CustomerEntity =  Customer.Db.Entities.Customer;
+
 
 namespace Customers.Api.Controllers;
 
@@ -41,22 +43,40 @@ public class CustomerController : ControllerBase
 	[HttpGet("{id}", Name = "GetCustomer")]
 	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
-		var customer = await _customerService.GetAsync(id, cancellationToken);
-		if (customer == null)
-		{
-			return NotFound();
-		}
+		var result = await _customerService.GetAsync(id, cancellationToken);
 
-		var customerResponse = customer.ToCustomerResponse();
-		return Ok(customerResponse);
+		return result.Match<IActionResult>(customer =>
+		{
+			if (customer == null)
+			{
+				return NotFound();
+			}
+
+			return Ok(customer.ToCustomerResponse());
+		}, exception =>
+		{
+			var errorResponse = exception.ToErrorResponse("Error updating customer");
+			return StatusCode(500, errorResponse);
+		});
+		
 	}
 	
 	[HttpGet(Name = "GetAllCustomers")]
 	public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
 	{
-		var customers = await _customerService.GetAllAsync(cancellationToken);
-		var customersResponse = customers.ToCustomerResponses();
-		return Ok(customersResponse);
+		var result = await _customerService.GetAllAsync(cancellationToken);
+
+		return result.Match<IActionResult>(customers =>
+		{
+			var customersResponse = customers.ToCustomerResponses();
+			return Ok(customersResponse);
+		}, exception =>
+		{
+			var errorResponse = exception.ToErrorResponse("Error getting all customers");
+			return StatusCode(500, errorResponse);
+		});
+		
+		
 	}
 	
 	[HttpPut("{id}", Name = "UpdateCustomer")]
@@ -65,17 +85,26 @@ public class CustomerController : ControllerBase
 		[FromBody] UpdateCustomerRequest request, 
 		CancellationToken cancellationToken)
 	{
-		var customer = await _customerService.GetAsync(id, cancellationToken);
+		var result = await _customerService.GetAsync(id, cancellationToken);
+
+		var customer = result.Match<CustomerEntity?>(x => x, ex => null);
+
 		if (customer == null)
 		{
 			return NotFound();
 		}
 		
-		await _customerService.UpdateAsync(customer.UpdateWith(request), cancellationToken);
-
-		var customerResponse = customer.ToCustomerResponse();
+		var updateResult = await _customerService.UpdateAsync(customer.UpdateWith(request), cancellationToken);
 		
-		return Ok(customerResponse);
+		return updateResult.Match(updatedCustomer =>
+		{
+			var customerResponse = updatedCustomer.ToCustomerResponse();
+			return Ok(customerResponse);
+		}, exception =>
+		{
+			var errorResponse = exception.ToErrorResponse("Error updating customer");
+			return StatusCode(500, errorResponse);
+		});
 	}
 
 	[HttpDelete("{id}", Name = "DeleteCustomer")]
@@ -83,14 +112,20 @@ public class CustomerController : ControllerBase
 		[FromRoute] Guid id,
 		CancellationToken cancellationToken)
 	{
-		var customer = await _customerService.GetAsync(id, cancellationToken);
+		var result = await _customerService.GetAsync(id, cancellationToken);
+
+		var customer = result.Match<CustomerEntity?>(x => x, ex => null);
+
 		if (customer == null)
 		{
 			return NotFound();
 		}
+		var deleteResult = await _customerService.DeleteAsync(customer, cancellationToken);
 
-		await _customerService.DeleteAsync(customer, cancellationToken);
-
-		return Ok();
+		return deleteResult.Match<IActionResult>(c => Ok(), exception =>
+		{
+			var errorResponse = exception.ToErrorResponse("Error deleting customer");
+			return StatusCode(500, errorResponse);
+		});
 	}
 }

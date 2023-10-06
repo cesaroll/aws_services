@@ -24,55 +24,83 @@ public class CustomerService : ICustomerService
 			await _customersContext.Customers.AddAsync(customer, cancellationToken);
 			await _customersContext.SaveChangesAsync(cancellationToken);
 			
-			_logger
-				.ForContext("Customer", customer, destructureObjects: true)
-				.Information("Customer Created");
+			_logger.Information("Created: {@Customer}", customer);
 			
 			return customer;
 		}
 		catch (Exception ex)
 		{
-			_logger
-				.ForContext("Customer", customer, destructureObjects: true)
-				.Error(ex, "Error creating customer");
+			_logger.Error(ex, "Error creating: {@Customer}", customer);
 			return new Result<CustomerEntity>(ex);
 		}
 	}
 
-	public async Task<CustomerEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
+	public async Task<Result<CustomerEntity>> GetAsync(Guid id, CancellationToken cancellationToken)
 	{
-		_logger.Information("Getting customer");
-
-		// Random Exception
-		var rng = new Random();
-		if (rng.Next(0, 5) < 2)
+		try
 		{
-			throw new Exception("Random test exception");
+			var customer = await _customersContext.Customers.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
+			if (customer == null)
+			{
+				_logger.Information("Customer with id: {id} not found", id);
+				return new Result<CustomerEntity>(new KeyNotFoundException($"Customer with id: {id} not found"));	
+			}
+			
+			_logger.Information("Getting: {@customer}", customer);
+
+			return customer;
+		} catch(Exception ex)
+		{
+			_logger.Error(ex, "Error getting customer with id: {id}", id);
+			return new Result<CustomerEntity>(ex);
 		}
-		
-		var customer = await _customersContext.Customers.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
-		_logger.Information("Customer: {@customer}", customer);
-
-		return customer;
 	}
 
-	public async Task<IEnumerable<CustomerEntity>> GetAllAsync(CancellationToken cancellationToken)
+	public async Task<Result<IEnumerable<CustomerEntity>>> GetAllAsync(CancellationToken cancellationToken)
 	{
-		_logger.Information("Getting all customers");
-		return await _customersContext.Customers.ToListAsync(cancellationToken);
+		try
+		{
+			var customers = await _customersContext.Customers.ToListAsync(cancellationToken);
+			_logger.Information("Getting all customers");
+			return customers;
+		} catch(Exception ex)
+		{
+			_logger.Error(ex, "Error getting all customers");
+			return new Result<IEnumerable<CustomerEntity>>(ex);
+		}
 	}
 
-	public Task<int> UpdateAsync(CustomerEntity customer, CancellationToken cancellationToken)
+	public async Task<Result<CustomerEntity>> UpdateAsync(CustomerEntity customer, CancellationToken cancellationToken)
 	{
-		_logger.Information("Updating customer");
-		_customersContext.Customers.Update(customer);
-		return _customersContext.SaveChangesAsync(cancellationToken);
+		try
+		{
+			var result = _customersContext.Customers.Update(customer);
+			await _customersContext.SaveChangesAsync(cancellationToken);
+			
+			_logger.Information("Updating: {@customer}", customer);
+
+			return customer;
+		} catch(Exception ex)
+		{
+			_logger.Error(ex, "Error updating: {@customer}", customer);
+			return new Result<CustomerEntity>(ex);
+		}
 	}
 
-	public Task<int> DeleteAsync(CustomerEntity customer, CancellationToken cancellationToken)
+	public async Task<Result<CustomerEntity>> DeleteAsync(CustomerEntity customer, CancellationToken cancellationToken)
 	{
-		_logger.Information("Deleting customer");
-		_customersContext.Customers.Remove(customer);
-		return _customersContext.SaveChangesAsync(cancellationToken);
+		try
+		{
+			_customersContext.Customers.Remove(customer);
+			await _customersContext.SaveChangesAsync(cancellationToken);
+			
+			_logger.Information("Deleting: {@customer}", customer);
+			return customer;
+		} catch(Exception ex)
+		{
+			_logger.Error(ex, "Error deleting: {@customer}", customer);
+			return new Result<CustomerEntity>(ex);
+		}
 	}
 }
