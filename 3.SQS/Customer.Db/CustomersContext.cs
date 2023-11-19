@@ -24,7 +24,7 @@ public partial class CustomersContext : DbContext
             entity.HasKey(e => e.Id).HasName("Customers_pkey");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.DateOfBirth).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.DateOfBirth).HasColumnType("timestamp with time zone");
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.GitHubUsername).HasMaxLength(100);

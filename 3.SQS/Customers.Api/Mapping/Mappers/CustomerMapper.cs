@@ -15,6 +15,7 @@ public partial class CustomerMapper
 	{
 		var customer = MapCustomerRequestToCustomer(customerRequest);
 		customer.Id = Guid.NewGuid();
+		customer.DateOfBirth = customer.DateOfBirth.ToUniversalTime();
 		return customer;
 	}
 	private partial CustomerEntity MapCustomerRequestToCustomer(CustomerRequest customerRequest);

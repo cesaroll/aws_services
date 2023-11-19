@@ -8,6 +8,9 @@ using CustomerEntity =  Customer.Db.Entities.Customer;
 
 namespace Customers.Api.Controllers;
 
+/// <summary>
+/// Customer controller
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class CustomerController : ControllerBase
@@ -23,6 +26,12 @@ public class CustomerController : ControllerBase
 		_customerService = customerService;
 	}
 
+	/// <summary>
+	/// Create Customer
+	/// </summary>
+	/// <param name="request"></param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	[HttpPost(Name = "CreateCustomer")]
 	public async Task<IActionResult> Create([FromBody] CustomerRequest request, CancellationToken cancellationToken)
 	{
@@ -40,6 +49,12 @@ public class CustomerController : ControllerBase
 		});
 	}
 	
+	/// <summary>
+	/// Get Customer by Id
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	[HttpGet("{id}", Name = "GetCustomer")]
 	public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
 	{
@@ -61,6 +76,11 @@ public class CustomerController : ControllerBase
 		
 	}
 	
+	/// <summary>
+	/// Get all Customers
+	/// </summary>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	[HttpGet(Name = "GetAllCustomers")]
 	public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
 	{
@@ -79,6 +99,13 @@ public class CustomerController : ControllerBase
 		
 	}
 	
+	/// <summary>
+	/// Update Customer
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="request"></param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	[HttpPut("{id}", Name = "UpdateCustomer")]
 	public async Task<IActionResult> Update(
 		[FromRoute] Guid id,
@@ -107,6 +134,12 @@ public class CustomerController : ControllerBase
 		});
 	}
 
+	/// <summary>
+	/// Delete Customer
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	[HttpDelete("{id}", Name = "DeleteCustomer")]
 	public async Task<IActionResult> Delete(
 		[FromRoute] Guid id,
