@@ -1,6 +1,17 @@
+
+
+using App.DI;
+using Persistence.PG.DI;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddPostgresql(options => {
+    options.ConnectionString = builder.Configuration.GetConnectionString("Customers");
+});
+
+builder.Services.AddAppServices();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

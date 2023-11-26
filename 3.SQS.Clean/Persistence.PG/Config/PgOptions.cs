@@ -6,5 +6,5 @@ namespace Persistence.PG.Config;
 
 public class PgOptions
 {
-    public string ConnectionString { get; set; } = string.Empty;
+    public string? ConnectionString { get; set; } = string.Empty;
 }

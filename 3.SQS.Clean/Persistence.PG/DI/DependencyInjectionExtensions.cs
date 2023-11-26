@@ -12,7 +12,7 @@ namespace Persistence.PG.DI;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddPersistencePg(this IServiceCollection services, Action<PgOptions> optionsAction)
+    public static IServiceCollection AddPostgresql(this IServiceCollection services, Action<PgOptions> optionsAction)
     {
         var options = new PgOptions();
         optionsAction(options);
