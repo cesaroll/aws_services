@@ -21,21 +21,6 @@ public class CustomerService : ICustomerService
         _unitOfWork = unitOfWork;
     }
 
-    public Task<Result<Customer>> CreateAsync(Customer customer, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Result<int>> DeleteAsync(Guid id, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Result<IEnumerable<Customer>>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<Result<Customer>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         try {
@@ -51,8 +36,57 @@ public class CustomerService : ICustomerService
         }
     }
 
-    public Task<Result<Customer>> UpdateAsync(Customer customer, CancellationToken cancellationToken)
+
+    public async Task<Result<IEnumerable<Customer>>> GetAllAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try {
+            var customers = await _customerRepository.GetAllAsync(cancellationToken);
+
+            return new Result<IEnumerable<Customer>>(customers);
+
+        } catch(Exception ex) {
+            return new Result<IEnumerable<Customer>>(ex);
+        }
     }
+
+    public async Task<Result<Customer>> CreateAsync(Customer customer, CancellationToken cancellationToken)
+    {
+        try {
+            var result = await _customerRepository.AddAsync(customer, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return result;
+
+        } catch(Exception ex) {
+            return new Result<Customer>(ex);
+        }
+    }
+
+    public async Task<Result<Customer>> UpdateAsync(Customer customer, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _customerRepository.UpdateAsync(customer, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return result;
+
+        } catch(Exception ex) {
+            return new Result<Customer>(ex);
+        }
+    }
+
+    public async Task<Result<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        try {
+            var result = await _customerRepository.DeleteAsync(id, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return result;
+
+        } catch(Exception ex) {
+            return new Result<bool>(ex);
+        }
+    }
+
 }

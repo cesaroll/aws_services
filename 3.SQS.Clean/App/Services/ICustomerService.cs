@@ -13,5 +13,5 @@ public interface ICustomerService
     Task<Result<IEnumerable<Customer>>> GetAllAsync(CancellationToken cancellationToken);
     Task<Result<Customer>> CreateAsync(Customer customer, CancellationToken cancellationToken);
     Task<Result<Customer>> UpdateAsync(Customer customer, CancellationToken cancellationToken);
-    Task<Result<int>> DeleteAsync(Guid id, CancellationToken cancellationToken);
+    Task<Result<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
