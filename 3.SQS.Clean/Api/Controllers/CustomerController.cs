@@ -17,7 +17,7 @@ public class CustomerController : ControllerBase
         _customerService = customerService;
     }
 
-    [HttpGet("{id}", Name = "Get")]
+    [HttpGet("{id}", Name = "GetCustomer")]
     public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var result = await _customerService.GetByIdAsync(id, cancellationToken);
@@ -33,7 +33,7 @@ public class CustomerController : ControllerBase
         });
     }
 
-    [HttpGet]
+    [HttpGet("all", Name = "GetAllCustomers")]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await _customerService.GetAllAsync(cancellationToken);
@@ -49,7 +49,7 @@ public class CustomerController : ControllerBase
         });
     }
 
-    [HttpPost]
+    [HttpPost(Name = "CreateCustomer")]
     public async Task<IActionResult> Create(
         [FromBody]
         CreateCustomerContract createCustomerContract,
@@ -60,6 +60,38 @@ public class CustomerController : ControllerBase
         return result.Match<IActionResult>(customer =>
         {
             return CreatedAtAction(nameof(Get), new { id = customer.Id }, customer);
+        }, exception => {
+            return BadRequest(exception.Message);
+        });
+    }
+
+    [HttpPut(Name = "UpdateCustomer")]
+    public async Task<IActionResult> Update(
+        [FromBody]
+        Customer updateCustomer,
+        CancellationToken cancellationToken)
+    {
+        var result = await _customerService.UpdateAsync(updateCustomer, cancellationToken);
+
+        return result.Match<IActionResult>(customer =>
+        {
+            return Ok(customer);
+        }, exception => {
+            return BadRequest(exception.Message);
+        });
+    }
+
+    [HttpDelete("{id}", Name = "DeleteCustomer")]
+    public async Task<IActionResult> Delete(
+        [FromRoute]
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _customerService.DeleteAsync(id, cancellationToken);
+
+        return result.Match<IActionResult>(customer =>
+        {
+            return Ok();
         }, exception => {
             return BadRequest(exception.Message);
         });

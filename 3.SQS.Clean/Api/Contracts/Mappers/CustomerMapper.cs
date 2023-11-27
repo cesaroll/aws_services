@@ -14,7 +14,7 @@ public partial class CustomerMapper
 
     public Customer CreateCustomerContractToCustomer(CreateCustomerContract createCustomerContract)
     {
-        var customer = MapCreateCustomerContractToCustomer(createCustomerContract);
+        var customer = createCustomerContract.ToCustomer();
         customer.Id = Guid.NewGuid();
         customer.DateOfBirth = customer.DateOfBirth.ToUniversalTime();
         return customer;
