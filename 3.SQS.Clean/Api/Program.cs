@@ -12,7 +12,7 @@ builder.Services.AddPostgresql(options => {
 
 builder.Services.AddAppServices();
 
-builder.Services.AddControllers();
+builder.Services.AddApiControllers();
 
 builder.Host.AddSerilog();
 
