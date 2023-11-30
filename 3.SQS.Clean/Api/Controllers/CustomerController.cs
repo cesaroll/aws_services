@@ -77,19 +77,11 @@ public class CustomerController : ControllerBase
         CustomerContract customerContract,
         CancellationToken cancellationToken)
     {
-        var result = await _customerService.GetByIdAsync(id, cancellationToken);
 
-		var customer = result.Match<Customer?>(x => x, ex => null);
+        var customer = customerContract.ToCustomer();
+        customer.Id = id;
 
-		if (customer == null)
-		{
-			return NotFound();
-		}
-
-        var customerUpdated = customerContract.ToCustomer();
-        customerUpdated.Id = id;
-
-        var updateResult = await _customerService.UpdateAsync(customerUpdated, cancellationToken);
+        var updateResult = await _customerService.UpdateAsync(customer, cancellationToken);
 
         return updateResult.Match<IActionResult>(
             Ok,
@@ -105,18 +97,9 @@ public class CustomerController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _customerService.GetByIdAsync(id, cancellationToken);
+        var result = await _customerService.DeleteAsync(id, cancellationToken);
 
-		var customer = result.Match<Customer?>(x => x, ex => null);
-
-		if (customer == null)
-		{
-			return NotFound();
-		}
-
-        var deleteResult = await _customerService.DeleteAsync(id, cancellationToken);
-
-        return deleteResult.Match<IActionResult>(customer =>
+        return result.Match<IActionResult>(customer =>
         {
             return Ok();
         }, exception => {

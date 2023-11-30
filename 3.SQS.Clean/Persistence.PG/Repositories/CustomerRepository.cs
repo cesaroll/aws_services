@@ -24,12 +24,6 @@ public class CustomerRepository : ICustomerRepository
         return entity.Entity.ToCustomer();
     }
 
-    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        _dbContext.Customers.Remove(new CustomerEntity { Id = id });
-        return Task.FromResult(true);
-    }
-
     public async Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var customerEntities = await _dbContext.Customers.ToListAsync(cancellationToken);
@@ -42,10 +36,33 @@ public class CustomerRepository : ICustomerRepository
         return customer?.ToCustomer();
     }
 
-    public Task<Customer> UpdateAsync(Customer customer, CancellationToken cancellationToken = default)
+    public async Task<Customer> UpdateAsync(Customer customer, CancellationToken cancellationToken = default)
     {
-        var customerEntity = customer.ToCustomerEntity();
+        var customerEntity = await _dbContext.Customers.FirstOrDefaultAsync(x => x.Id == customer.Id, cancellationToken);
+
+        if (customerEntity == null)
+            throw new KeyNotFoundException($"Customer with id {customer.Id} not found");
+
+        customerEntity.FullName = customer.FullName;
+        customerEntity.Email = customer.Email;
+        customerEntity.GitHubUsername = customer.GitHubUsername;
+        customerEntity.DateOfBirth = customer.DateOfBirth;
+
         _dbContext.Customers.Update(customerEntity);
-        return Task.FromResult(customer);
+
+        return customer;
     }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var customer = await _dbContext.Customers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (customer == null)
+            return false;
+
+        _dbContext.Customers.Remove(customer);
+
+        return true;
+    }
+
 }
