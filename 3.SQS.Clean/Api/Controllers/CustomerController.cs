@@ -1,4 +1,5 @@
 using Api.Contracts;
+using Api.Contracts.Errors;
 using Api.Contracts.Mappers;
 using App.Services;
 using Domain.Models;
@@ -29,7 +30,8 @@ public class CustomerController : ControllerBase
 
             return Ok(customer);
         }, exception => {
-            return BadRequest(exception.Message);
+            var errorResponse = exception.ToErrorResponse("Error retrieving customer");
+			return StatusCode(500, errorResponse);
         });
     }
 
@@ -45,7 +47,8 @@ public class CustomerController : ControllerBase
 
             return Ok(customers);
         }, exception => {
-            return BadRequest(exception.Message);
+            var errorResponse = exception.ToErrorResponse("Error retrieving all customers");
+			return StatusCode(500, errorResponse);
         });
     }
 
@@ -61,7 +64,8 @@ public class CustomerController : ControllerBase
         {
             return CreatedAtAction(nameof(Get), new { id = customer.Id }, customer);
         }, exception => {
-            return BadRequest(exception.Message);
+            var errorResponse = exception.ToErrorResponse("Error creating customer");
+			return StatusCode(500, errorResponse);
         });
     }
 
@@ -73,16 +77,25 @@ public class CustomerController : ControllerBase
         CustomerContract customerContract,
         CancellationToken cancellationToken)
     {
-        var customer = customerContract.ToCustomer();
-        customer.Id = id;
+        var result = await _customerService.GetByIdAsync(id, cancellationToken);
 
-        var result = await _customerService.UpdateAsync(customer, cancellationToken);
+		var customer = result.Match<Customer?>(x => x, ex => null);
 
-        return result.Match<IActionResult>(customer =>
-        {
-            return Ok(customer);
-        }, exception => {
-            return BadRequest(exception.Message);
+		if (customer == null)
+		{
+			return NotFound();
+		}
+
+        var customerUpdated = customerContract.ToCustomer();
+        customerUpdated.Id = id;
+
+        var updateResult = await _customerService.UpdateAsync(customerUpdated, cancellationToken);
+
+        return updateResult.Match<IActionResult>(
+            Ok,
+            exception => {
+            var errorResponse = exception.ToErrorResponse("Error updating customer");
+			return StatusCode(500, errorResponse);
         });
     }
 
@@ -92,13 +105,23 @@ public class CustomerController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _customerService.DeleteAsync(id, cancellationToken);
+        var result = await _customerService.GetByIdAsync(id, cancellationToken);
 
-        return result.Match<IActionResult>(customer =>
+		var customer = result.Match<Customer?>(x => x, ex => null);
+
+		if (customer == null)
+		{
+			return NotFound();
+		}
+
+        var deleteResult = await _customerService.DeleteAsync(id, cancellationToken);
+
+        return deleteResult.Match<IActionResult>(customer =>
         {
             return Ok();
         }, exception => {
-            return BadRequest(exception.Message);
+            var errorResponse = exception.ToErrorResponse("Error deleting customer");
+			return StatusCode(500, errorResponse);
         });
     }
 }

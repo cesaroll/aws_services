@@ -11,6 +11,7 @@ builder.Services.AddPostgresql(options => {
 });
 
 builder.Services.AddAppServices();
+builder.Services.AddMiddlewareServices();
 
 builder.Services.AddApiControllers();
 
@@ -21,6 +22,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.AddMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
