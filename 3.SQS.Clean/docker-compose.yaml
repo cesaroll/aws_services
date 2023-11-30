@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  PostgreSql:
+    container_name: customers_db
+    image: postgres
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: Password123
+      POSTGRES_DB: customers
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  Liquibase:
+    container_name: migrations
+    image: liquibase/liquibase
+    depends_on:
+      PostgreSql:
+        condition: service_healthy
+    command: liquibase update --changeLogFile=changelog.xml --url=jdbc:postgresql://PostgreSql:5432/customers --username=app --password=Password123 --log-level info
+    volumes:
+      - ./database/config/changelog.xml:/liquibase/changelog.xml
+      - ./database/migrations:/liquibase/migrations
+    networks:
+      - postgres
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    networks:
+      - es-net
+    ports:
+      - 9200:9200
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:8.10.2
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - es-net
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+
+networks:
+  postgres:
+    driver: bridge
+  es-net:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:

@@ -1,5 +1,4 @@
-
-
+using Api.DI;
 using App.DI;
 using Persistence.PG.DI;
 
@@ -14,6 +13,9 @@ builder.Services.AddPostgresql(options => {
 builder.Services.AddAppServices();
 
 builder.Services.AddControllers();
+
+builder.Host.AddSerilog();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

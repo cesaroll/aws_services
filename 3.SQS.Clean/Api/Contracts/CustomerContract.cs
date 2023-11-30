@@ -4,7 +4,7 @@
  */
 namespace Api.Contracts;
 
-public class CreateCustomerContract
+public class CustomerContract
 {
     public string FullName { get; set; } = null!;
 

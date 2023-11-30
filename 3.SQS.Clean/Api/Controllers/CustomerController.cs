@@ -52,10 +52,10 @@ public class CustomerController : ControllerBase
     [HttpPost(Name = "CreateCustomer")]
     public async Task<IActionResult> Create(
         [FromBody]
-        CreateCustomerContract createCustomerContract,
+        CustomerContract customerContract,
         CancellationToken cancellationToken)
     {
-        var result = await _customerService.CreateAsync(createCustomerContract.ToCustomer(), cancellationToken);
+        var result = await _customerService.CreateAsync(customerContract.ToCustomer(), cancellationToken);
 
         return result.Match<IActionResult>(customer =>
         {
@@ -65,13 +65,18 @@ public class CustomerController : ControllerBase
         });
     }
 
-    [HttpPut(Name = "UpdateCustomer")]
+    [HttpPut("{id}", Name = "UpdateCustomer")]
     public async Task<IActionResult> Update(
+        [FromRoute]
+        Guid id,
         [FromBody]
-        Customer updateCustomer,
+        CustomerContract customerContract,
         CancellationToken cancellationToken)
     {
-        var result = await _customerService.UpdateAsync(updateCustomer, cancellationToken);
+        var customer = customerContract.ToCustomer();
+        customer.Id = id;
+
+        var result = await _customerService.UpdateAsync(customer, cancellationToken);
 
         return result.Match<IActionResult>(customer =>
         {

@@ -12,12 +12,12 @@ public partial class CustomerMapper
 {
     public static CustomerMapper Instance { get; } = new CustomerMapper();
 
-    public Customer CreateCustomerContractToCustomer(CreateCustomerContract createCustomerContract)
+    public Customer CreateCustomerContractToCustomer(CustomerContract customerContract)
     {
-        var customer = createCustomerContract.ToCustomer();
+        var customer = MapCreateCustomerContractToCustomer(customerContract);
         customer.Id = Guid.NewGuid();
         customer.DateOfBirth = customer.DateOfBirth.ToUniversalTime();
         return customer;
     }
-    private partial Customer MapCreateCustomerContractToCustomer(CreateCustomerContract createCustomerContract);
+    private partial Customer MapCreateCustomerContractToCustomer(CustomerContract customerContract);
 }

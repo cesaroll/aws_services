@@ -9,6 +9,6 @@ namespace Api.Contracts.Mappers;
 
 public static class CustomerMapperExtensions
 {
-    public static Customer ToCustomer(this CreateCustomerContract createCustomerContract) =>
-        CustomerMapper.Instance.CreateCustomerContractToCustomer(createCustomerContract);
+    public static Customer ToCustomer(this CustomerContract customerContract) =>
+        CustomerMapper.Instance.CreateCustomerContractToCustomer(customerContract);
 }
