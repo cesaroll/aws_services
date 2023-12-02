@@ -8,7 +8,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
-namespace Api.DI;
+namespace Api.Config;
 
 public static class Controllers
 {

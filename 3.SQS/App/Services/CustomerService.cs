@@ -5,6 +5,7 @@
 
 using Domain.Models;
 using LanguageExt.Common;
+using Messenger.SQS.Messaging;
 using Persistence;
 using ILogger = Serilog.ILogger;
 
@@ -15,12 +16,14 @@ public class CustomerService : ICustomerService
     private readonly ILogger _logger;
     private readonly ICustomerRepository _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISqsMessenger _sqsMessenger;
 
-    public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, ILogger logger)
+    public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, ILogger logger, ISqsMessenger sqsMessenger)
     {
         _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _sqsMessenger = sqsMessenger;
     }
 
     public async Task<Result<Customer>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -67,6 +70,8 @@ public class CustomerService : ICustomerService
 
             _logger.Information("Created: {@Customer}", customer);
 
+            await _sqsMessenger.SendMessageAsync(customer, "CREATE", cancellationToken);
+
             return result;
 
         } catch(Exception ex) {
@@ -84,6 +89,8 @@ public class CustomerService : ICustomerService
 
             _logger.Information("Updating: {@customer}", customer);
 
+            await _sqsMessenger.SendMessageAsync(customer, "UPDATE", cancellationToken);
+
             return result;
 
         } catch(Exception ex) {
@@ -99,6 +106,8 @@ public class CustomerService : ICustomerService
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Deleting Customer: {@id}", id);
+
+            await _sqsMessenger.SendMessageAsync(new Customer {Id = id}, "DELETE", cancellationToken);
 
             return result;
 

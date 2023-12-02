@@ -12,5 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Persistence\Persistence.csproj" />
+    <ProjectReference Include="..\Messenger.SQS\Messenger.SQS.csproj" />
   </ItemGroup>
 </Project>

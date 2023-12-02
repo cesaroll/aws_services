@@ -22,5 +22,6 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\App\App.csproj" />
     <ProjectReference Include="..\Persistence.PG\Persistence.PG.csproj" />
+    <ProjectReference Include="..\Messenger.SQS\Messenger.SQS.csproj" />
   </ItemGroup>
 </Project>

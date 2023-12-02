@@ -4,7 +4,7 @@
  */
 using Serilog;
 
-namespace Api.DI;
+namespace Api.Config;
 
 public static class Logs
 {

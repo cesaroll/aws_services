@@ -1,14 +1,18 @@
-using Api.DI;
+using Api.Config;
 using App.DI;
-using Persistence.PG.DI;
+using Messenger.SQS.Config;
+using Persistence.PG.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddPostgresql(options => {
-    options.ConnectionString = builder.Configuration.GetConnectionString("Customers");
-});
+builder.Services.AddSingleton(new PgSettings() { ConnectionString = builder.Configuration.GetConnectionString(PgSettings.Key)! });
+builder.Services.AddPostgresql();
+
+
+builder.Services.Configure<QueueSettings>(builder.Configuration.GetSection(QueueSettings.Key));
+builder.Services.AddSqsMessenger();
 
 builder.Services.AddAppServices();
 builder.Services.AddMiddlewareServices();

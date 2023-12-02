@@ -4,7 +4,7 @@
  */
 using Api.Middleware;
 
-namespace Api.DI;
+namespace Api.Config;
 
 public static class Middleware
 {
