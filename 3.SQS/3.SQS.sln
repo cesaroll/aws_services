@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence.PG", "Persisten
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger.SQS", "Messenger.SQS\Messenger.SQS.csproj", "{49BE0D98-091E-4173-A382-F5F298F787A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consumer.SQS", "Consumer.SQS\Consumer.SQS.csproj", "{33BEA700-512A-4C6A-BC71-ED57C3B30E8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,13 @@ Global
 		{49BE0D98-091E-4173-A382-F5F298F787A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49BE0D98-091E-4173-A382-F5F298F787A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49BE0D98-091E-4173-A382-F5F298F787A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC39CBF4-E311-4A8B-927D-2386358F06B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC39CBF4-E311-4A8B-927D-2386358F06B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC39CBF4-E311-4A8B-927D-2386358F06B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC39CBF4-E311-4A8B-927D-2386358F06B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33BEA700-512A-4C6A-BC71-ED57C3B30E8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33BEA700-512A-4C6A-BC71-ED57C3B30E8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33BEA700-512A-4C6A-BC71-ED57C3B30E8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33BEA700-512A-4C6A-BC71-ED57C3B30E8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
