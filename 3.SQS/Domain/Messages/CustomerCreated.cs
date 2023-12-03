@@ -2,9 +2,10 @@
  * @author: Cesar Lopez
  * @copyright 2023 - All rights reserved
  */
+
 namespace Domain.Messages;
 
-public class CustomerCreated
+public class CustomerCreated : IMessage
 {
     public Guid Id { get; set; }
 

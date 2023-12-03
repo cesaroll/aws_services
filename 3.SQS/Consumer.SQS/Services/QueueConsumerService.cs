@@ -8,7 +8,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using Consumer.SQS.Config;
 using Domain.Messages;
-using Domain.Models;
+using MediatR;
 using Microsoft.Extensions.Options;
 using ILogger = Serilog.ILogger;
 
@@ -18,15 +18,17 @@ public class QueueConsumerService : BackgroundService
 {
     private readonly IAmazonSQS _sqsClient;
     private readonly IOptions<QueueSettings> _queueSettings;
+    private readonly IMediator _mediator;
     private readonly ILogger _logger;
 
     private string? _queueUrl;
 
-    public QueueConsumerService(IAmazonSQS sqsClient, IOptions<QueueSettings> queueSettings, ILogger logger)
+    public QueueConsumerService(IAmazonSQS sqsClient, IOptions<QueueSettings> queueSettings, ILogger logger, IMediator mediator)
     {
         _sqsClient = sqsClient;
         _queueSettings = queueSettings;
         _logger = logger;
+        _mediator = mediator;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,33 +51,26 @@ public class QueueConsumerService : BackgroundService
             {
                try
                {
-                 var messageType = message.MessageAttributes["MessageType"].StringValue;
+                    var messageType = message.MessageAttributes["MessageType"].StringValue;
+                    var type = Type.GetType($"Domain.Messages.{messageType}, Domain");
 
-                _logger.Information("MessageType: {messageType}", messageType);
-                _logger.Information("Message: {message}", message.Body);
+                    if (type is null)
+                    {
+                        _logger.Warning("Invalid MessageType: {messageType}", messageType);
+                        continue;
+                    }
 
-                switch(messageType)
-                {
-                    case "CustomerCreated":
-                        var customerCreated = JsonSerializer.Deserialize<CustomerCreated>(message.Body);
-                        _logger.Information("CustomerCreated: {@customerCreated}", customerCreated);
-                        break;
-                    case "CustomerUpdated":
-                        var customerUpdated = JsonSerializer.Deserialize<CustomerUpdated>(message.Body);
-                        _logger.Information("CustomerUpdated: {@customerUpdated}", customerUpdated);
-                        break;
-                    case "CustomerDeleted":
-                        var customerDeleted = JsonSerializer.Deserialize<CustomerDeleted>(message.Body);
-                        _logger.Information("CustomerDeleted: {@customerDeleted}", customerDeleted);
-                        break;
-                    default:
-                        throw new Exception("Invalid MessageType");
-                }
+                    //_logger.Information("Message: {message}", message.Body);
 
-                await _sqsClient.DeleteMessageAsync(queueUrl, message.ReceiptHandle, stoppingToken);
+                    var messageObject = (IMessage)JsonSerializer.Deserialize(message.Body, type!)!;
+
+                    await _mediator.Send(messageObject, stoppingToken);
+
+                    await _sqsClient.DeleteMessageAsync(queueUrl, message.ReceiptHandle, stoppingToken);
                } catch(Exception ex)
                {
                      _logger.Error(ex, "Error processing message: {@message}", message);
+                     continue;
                }
             }
 
