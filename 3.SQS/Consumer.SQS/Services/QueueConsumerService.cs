@@ -7,6 +7,7 @@ using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Consumer.SQS.Config;
+using Domain.Messages;
 using Domain.Models;
 using Microsoft.Extensions.Options;
 using ILogger = Serilog.ILogger;
@@ -46,17 +47,36 @@ public class QueueConsumerService : BackgroundService
 
             foreach (var message in response.Messages)
             {
-                var dataOperation = message.MessageAttributes["DataOperation"].StringValue;
-                var messageType = message.MessageAttributes["MessageType"].StringValue;
+               try
+               {
+                 var messageType = message.MessageAttributes["MessageType"].StringValue;
 
-                var customer = JsonSerializer.Deserialize<Customer>(message.Body);
-
-                _logger.Information("DataOperation: {dataOperation}", dataOperation);
                 _logger.Information("MessageType: {messageType}", messageType);
                 _logger.Information("Message: {message}", message.Body);
-                _logger.Information("Customer: {@customer}", customer);
+
+                switch(messageType)
+                {
+                    case "CustomerCreated":
+                        var customerCreated = JsonSerializer.Deserialize<CustomerCreated>(message.Body);
+                        _logger.Information("CustomerCreated: {@customerCreated}", customerCreated);
+                        break;
+                    case "CustomerUpdated":
+                        var customerUpdated = JsonSerializer.Deserialize<CustomerUpdated>(message.Body);
+                        _logger.Information("CustomerUpdated: {@customerUpdated}", customerUpdated);
+                        break;
+                    case "CustomerDeleted":
+                        var customerDeleted = JsonSerializer.Deserialize<CustomerDeleted>(message.Body);
+                        _logger.Information("CustomerDeleted: {@customerDeleted}", customerDeleted);
+                        break;
+                    default:
+                        throw new Exception("Invalid MessageType");
+                }
 
                 await _sqsClient.DeleteMessageAsync(queueUrl, message.ReceiptHandle, stoppingToken);
+               } catch(Exception ex)
+               {
+                     _logger.Error(ex, "Error processing message: {@message}", message);
+               }
             }
 
             await Task.Delay(1000, stoppingToken);

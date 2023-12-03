@@ -13,18 +13,18 @@ namespace Messenger.SQS.Messaging;
 
 public class SqsMessenger : ISqsMessenger
 {
-    private readonly IAmazonSQS _amasonSqsClient;
+    private readonly IAmazonSQS _messengerClient;
     private readonly IOptions<QueueSettings> _queueSettings;
 
     private string? _queueUrl;
 
-    public SqsMessenger(IAmazonSQS amasonSqsClient, IOptions<QueueSettings> queueSettings)
+    public SqsMessenger(IAmazonSQS messengerClient, IOptions<QueueSettings> queueSettings)
     {
-        _amasonSqsClient = amasonSqsClient;
+        _messengerClient = messengerClient;
         _queueSettings = queueSettings;
     }
 
-    public async Task<SendMessageResponse> SendMessageAsync<T>(T message, string operation, CancellationToken cancellationToken = default)
+    public async Task<SendMessageResponse> SendMessageAsync<T>(T message, CancellationToken cancellationToken = default)
     {
         var queueUrl = await GetQueueUrlAsync(cancellationToken);
 
@@ -34,14 +34,6 @@ public class SqsMessenger : ISqsMessenger
             MessageBody = JsonSerializer.Serialize(message),
             MessageAttributes = new Dictionary<string, MessageAttributeValue>
             {
-                {
-                    "DataOperation",
-                    new MessageAttributeValue
-                    {
-                        DataType = "String",
-                        StringValue = operation
-                    }
-                },
                 {
                     "MessageType",
                     new MessageAttributeValue
@@ -53,7 +45,7 @@ public class SqsMessenger : ISqsMessenger
             }
         };
 
-        return await _amasonSqsClient.SendMessageAsync(sendMessageRequest, cancellationToken);
+        return await _messengerClient.SendMessageAsync(sendMessageRequest, cancellationToken);
     }
 
     private async Task<string> GetQueueUrlAsync(CancellationToken cancellationToken)
@@ -61,7 +53,7 @@ public class SqsMessenger : ISqsMessenger
         if (_queueUrl is not null)
             return _queueUrl;
 
-        var queueUrlResponse = await _amasonSqsClient.GetQueueUrlAsync(_queueSettings.Value.Name, cancellationToken);
+        var queueUrlResponse = await _messengerClient.GetQueueUrlAsync(_queueSettings.Value.Name, cancellationToken);
         _queueUrl = queueUrlResponse.QueueUrl;
 
         return _queueUrl;

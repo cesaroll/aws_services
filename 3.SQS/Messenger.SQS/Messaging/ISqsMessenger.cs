@@ -8,5 +8,5 @@ namespace Messenger.SQS.Messaging;
 
 public interface ISqsMessenger
 {
-    Task<SendMessageResponse> SendMessageAsync<T>(T message, string operation, CancellationToken cancellationToken = default);
+    Task<SendMessageResponse> SendMessageAsync<T>(T message, CancellationToken cancellationToken = default);
 }

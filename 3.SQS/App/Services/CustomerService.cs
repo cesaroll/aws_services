@@ -3,6 +3,8 @@
  * @copyright 2023 - All rights reserved
  */
 
+using Domain.Messages;
+using Domain.Messages.Mappers;
 using Domain.Models;
 using LanguageExt.Common;
 using Messenger.SQS.Messaging;
@@ -70,7 +72,7 @@ public class CustomerService : ICustomerService
 
             _logger.Information("Created: {@Customer}", customer);
 
-            await _sqsMessenger.SendMessageAsync(customer, "CREATE", cancellationToken);
+            await _sqsMessenger.SendMessageAsync(customer.ToCustomerCreated(), cancellationToken);
 
             return result;
 
@@ -89,10 +91,13 @@ public class CustomerService : ICustomerService
 
             _logger.Information("Updating: {@customer}", customer);
 
-            await _sqsMessenger.SendMessageAsync(customer, "UPDATE", cancellationToken);
+            await _sqsMessenger.SendMessageAsync(customer.ToCustomerUpdated(), cancellationToken);
 
             return result;
 
+        } catch(KeyNotFoundException ex) {
+            _logger.Warning(ex, "Trying to update not existing Customer: {@customer}", customer);
+            return new Result<Customer>(ex);
         } catch(Exception ex) {
             _logger.Error(ex, "Error updating: {@customer}", customer);
             return new Result<Customer>(ex);
@@ -107,7 +112,7 @@ public class CustomerService : ICustomerService
 
             _logger.Information("Deleting Customer: {@id}", id);
 
-            await _sqsMessenger.SendMessageAsync(new Customer {Id = id}, "DELETE", cancellationToken);
+            await _sqsMessenger.SendMessageAsync(new CustomerDeleted {Id = id}, cancellationToken);
 
             return result;
 

@@ -83,11 +83,20 @@ public class CustomerController : ControllerBase
 
         var updateResult = await _customerService.UpdateAsync(customer, cancellationToken);
 
-        return updateResult.Match<IActionResult>(
-            Ok,
-            exception => {
-            var errorResponse = exception.ToErrorResponse("Error updating customer");
-			return StatusCode(500, errorResponse);
+        return updateResult.Match<IActionResult>(customer =>
+            {
+                return Ok(customer);
+            }, exception => {
+
+                if (exception is KeyNotFoundException)
+                {
+                    var notFoundError = exception.ToErrorResponse("Customer not found");
+                    return NotFound(notFoundError);
+                }
+
+
+                var errorResponse = exception.ToErrorResponse("Error updating customer");
+			    return StatusCode(500, errorResponse);
         });
     }
 
